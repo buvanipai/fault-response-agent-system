@@ -1,0 +1,114 @@
+@page "/history"
+@rendermode InteractiveServer
+@inject DagRunnerService Runner
+
+<PageTitle>Run History — Smart Fault Response System</PageTitle>
+
+<div class="content animate-fade-in-up">
+    <div class="dash-header">
+        <div>
+            <h1 class="dash-title">Run History</h1>
+            <p class="dash-subtitle">Past multi-agent DAG executions</p>
+        </div>
+    </div>
+
+    @if (!Runner.History.Any())
+    {
+        <div class="glass-card section-card">
+            <div class="empty-state">
+                <div class="empty-icon">◷</div>
+                <p>No DAG runs have been executed yet.</p>
+                <p>Go to the <a href="/">Dashboard</a> to run the agent DAG.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="glass-card section-card" style="padding: 0;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Run ID</th>
+                        <th>Alert</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                        <th>Duration</th>
+                        <th>Est. Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var run in Runner.History)
+                    {
+                        var isExpanded = expandedRunId == run.RunId;
+                        <tr @onclick="() => ToggleRow(run.RunId)" class="clickable-row" style="cursor: pointer; transition: background 0.2s;">
+                            <td><span class="mono">@run.RunId.Substring(0, 8)...</span></td>
+                            <td>
+                                <div><strong>@run.SelectedAlert.AlertId</strong></div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                    @run.SelectedAlert.FaultType on @run.SelectedAlert.MeterType
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-@run.Status.ToString().ToLower()">
+                                    @run.Status
+                                </span>
+                            </td>
+                            <td>@run.StartTime.ToLocalTime().ToString("MMM dd HH:mm")</td>
+                            <td>@run.Duration.TotalSeconds.ToString("F1")s</td>
+                            <td>
+                                @if (run.Report?.Risk != null)
+                                {
+                                    <span style="color: #ef4444;">$@run.Report.Risk.EstimatedCostImpact.ToString("N0")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                        </tr>
+                        @if (isExpanded && run.Report != null)
+                        {
+                            <tr class="expanded-row-bg">
+                                <td colspan="6" style="padding: 1rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color);">
+                                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                        <div style="flex: 1; min-width: 300px;">
+                                            <h4 style="color: var(--text-base); margin-bottom: 0.5rem; font-size: 0.9rem;">Executive Summary</h4>
+                                            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">@run.Report.ExecutiveSummary</p>
+                                        </div>
+                                        @if(run.Report.Resolution != null)
+                                        {
+                                            <div style="flex: 1; min-width: 300px; padding-left: 1rem; border-left: 1px solid var(--border-color);">
+                                                <h4 style="color: var(--text-base); margin-bottom: 0.5rem; font-size: 0.9rem;">Work Order</h4>
+                                                <p style="color: var(--text-muted); font-size: 0.85rem;"><strong>@run.Report.Resolution.WorkOrderTitle</strong></p>
+                                                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Est. Hours: @run.Report.Resolution.EstimatedRepairHours.ToString("F1")h | Parts: @(string.Join(", ", run.Report.Resolution.RequiredParts))</p>
+                                            </div>
+                                        }
+                                        <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.8rem; color: var(--text-muted);">
+                                            <div><strong>Tokens:</strong> @run.NodeTokens.Values.Sum().ToString("N0")</div>
+                                            @if(run.Report.Risk != null)
+                                            {
+                                                <div><strong>Severity Layer:</strong> Level @run.Report.Risk.SeverityScore / 10</div>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private string? expandedRunId;
+
+    private void ToggleRow(string runId)
+    {
+        if (expandedRunId == runId)
+            expandedRunId = null;
+        else
+            expandedRunId = runId;
+    }
+}

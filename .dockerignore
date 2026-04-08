@@ -1,0 +1,17 @@
+**/.bin
+**/.obj
+**/.vs
+**/.vscode
+**/.venv
+**/bin
+**/obj
+**/node_modules
+.git
+.gitignore
+.dockerignore
+*.db
+*.local.json
+appsettings.Development.json
+ implementation_plan.md
+ task.md
+ walkthrough.md

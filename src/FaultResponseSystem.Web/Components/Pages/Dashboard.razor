@@ -1,0 +1,602 @@
+@page "/"
+@rendermode InteractiveServer
+@implements IDisposable
+@inject DagRunnerService Runner
+
+<PageTitle>Dashboard — Smart Fault Response System</PageTitle>
+
+<div class="dashboard animate-fade-in-up">
+
+    <!-- ── Header ───────────────────────────────────────────── -->
+    <div class="dash-header">
+        <div>
+            <h1 class="dash-title">Agent Dashboard</h1>
+            <p class="dash-subtitle">Multi-agent DAG for smart building fault diagnosis & resolution</p>
+        </div>
+        <div class="dash-actions">
+            <div class="detection-level-control">
+                <label class="detection-label">
+                    Fault Detection Level
+                    <span class="detection-level-name">@DetectionLevelName</span>
+                </label>
+                <div class="detection-slider-row">
+                    <span class="detection-hint">Fewer</span>
+                    <input type="range" min="1" max="3" step="1"
+                           value="@_detectionLevel"
+                           @onchange="OnDetectionLevelChanged"
+                           disabled="@(Runner.IsRunning || Runner.IsScanning)"
+                           class="detection-slider" />
+                    <span class="detection-hint">More</span>
+                </div>
+            </div>
+            @if (Runner.IsScanning)
+            {
+                <button class="btn-secondary btn-icon" disabled>
+                    <span class="spinner"></span> Scanning...
+                </button>
+            }
+            @if (Runner.IsRunning)
+            {
+                <button class="btn-secondary btn-icon" @onclick="CancelRunAsync" style="color: #ef4444; border-color: rgba(239,68,68,0.4);">
+                    ✕ Cancel Run
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- ── Stats Bar ─────────────────────────────────────────── -->
+    <div class="stats-row">
+        <div class="stat-card glass-card">
+            <div class="stat-label">Value at Risk (Active)</div>
+            <div class="stat-value" style="color: #ef4444;">
+                $@Runner.TotalValueAtRisk.ToString("N0")
+            </div>
+        </div>
+        <div class="stat-card glass-card">
+            <div class="stat-label">Projected Labor Forecast</div>
+            <div class="stat-value" style="color: #f59e0b;">
+                @Runner.TotalLaborHours.ToString("F1") hs
+            </div>
+        </div>
+        <div class="stat-card glass-card">
+            <div class="stat-label">Total DAG Runs</div>
+            <div class="stat-value">@Runner.History.Count</div>
+        </div>
+        <div class="stat-card glass-card">
+            <div class="stat-label">Pending Alerts</div>
+            <div class="stat-value">@Runner.CachedAlerts.Count</div>
+        </div>
+    </div>
+
+    <div class="dash-grid">
+
+        <!-- ── Left Column ───────────────────────────────────── -->
+        <div class="dash-left">
+
+            <!-- Alert Selection -->
+            <div class="glass-card section-card">
+                <div class="section-header">
+                    <h3>⚠ Detected Anomalies</h3>
+                    @if (Runner.CachedAlerts.Any())
+                    {
+                        <span class="badge badge-running">@Runner.CachedAlerts.Count alerts</span>
+                    }
+                </div>
+
+                @if (!Runner.CachedAlerts.Any() && !Runner.IsScanning)
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">📡</div>
+                        <p>Adjust <strong>Fault Detection Level</strong> to surface building faults.</p>
+                    </div>
+                }
+                else if (Runner.IsScanning)
+                {
+                    <div class="skeleton-list">
+                        @for (int i = 0; i < 4; i++)
+                        {
+                            <div class="skeleton" style="height: 60px; margin-bottom: 8px;"></div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert-list">
+                        @foreach (var alert in Runner.CachedAlerts)
+                        {
+                            var isSelected = _selectedAlert?.AlertId == alert.AlertId;
+                            <button id="alert-@alert.AlertId"
+                                    class="alert-item @(isSelected ? "alert-item--selected" : "")"
+                                    @onclick="() => SelectAlert(alert)"
+                                    disabled="@Runner.IsRunning">
+                                <div class="alert-item-header">
+                                    <span class="fault-badge fault-@alert.FaultType.ToString().ToLower()">
+                                        @alert.FaultType
+                                    </span>
+                                    <span class="alert-meter">@alert.MeterType</span>
+                                </div>
+                                <div class="alert-building">@alert.BuildingId</div>
+                                <div class="alert-meta">
+                                    <span class="mono">z=@alert.DeviationScore.ToString("F1")</span>
+                                    <span>@alert.Timestamp.ToString("MMM dd, HH:mm")</span>
+                                </div>
+                            </button>
+                        }
+                    </div>
+
+                    <div class="run-action">
+                        <button id="btn-run-dag"
+                                class="btn-primary btn-icon"
+                                style="width: 100%;"
+                                @onclick="RunDagAsync"
+                                disabled="@(_selectedAlert == null || Runner.IsRunning)">
+                            @if (Runner.IsRunning)
+                            {
+                                <span class="spinner"></span>
+                                <span>Running Agent DAG...</span>
+                            }
+                            else
+                            {
+                                <span>▶</span>
+                                <span>Run DAG on Selected Alert</span>
+                            }
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- ── Right Column ──────────────────────────────────── -->
+        <div class="dash-right">
+
+            <!-- DAG Visualizer -->
+            <div class="glass-card section-card @(Runner.IsRunning ? "accent-glow" : "")">
+                <div class="section-header">
+                    <h3>◈ Agent DAG Execution</h3>
+                    @if (Runner.ActiveRun != null)
+                    {
+                        <span class="badge badge-@Runner.ActiveRun.Status.ToString().ToLower()">
+                            @Runner.ActiveRun.Status
+                        </span>
+                    }
+                </div>
+
+                <div class="dag-viz">
+                    <!-- Layer 1: 3 parallel agents -->
+                    <div class="dag-layer">
+                        @RenderNode("DiagnosticAgent",  "🔍", "Diagnostic")
+                        @RenderNode("ContextAgent",     "🌡", "Context")
+                        @RenderNode("MaintenanceAgent", "🔧", "Maintenance")
+                    </div>
+
+                    <div class="dag-connector">
+                        <div class="connector-line"></div>
+                        <div class="connector-merge">▼</div>
+                    </div>
+
+                    <!-- Layer 2: Risk assessment -->
+                    <div class="dag-layer dag-layer--center">
+                        @RenderNode("RiskAgent", "⚖", "Risk")
+                    </div>
+
+                    <div class="dag-connector">
+                        <div class="connector-split">▼</div>
+                    </div>
+
+                    <!-- Layer 3: 2 parallel agents -->
+                    <div class="dag-layer">
+                        @RenderNode("ComplianceAgent", "📋", "Compliance")
+                        @RenderNode("ResolutionAgent", "🛠", "Resolution")
+                    </div>
+
+                    <div class="dag-connector">
+                        <div class="connector-line"></div>
+                        <div class="connector-merge">▼</div>
+                    </div>
+
+                    <!-- Layer 4: Report -->
+                    <div class="dag-layer dag-layer--center">
+                        @RenderNode("ReportAgent", "📄", "Report")
+                    </div>
+                </div>
+
+                @if (Runner.ActiveRun != null)
+                {
+                    <div class="trace-summary">
+                        <div class="trace-row">
+                            <span class="text-muted">Run ID</span>
+                            <span class="mono">@Runner.ActiveRun.RunId</span>
+                        </div>
+                        <div class="trace-row">
+                            <span class="text-muted">Started</span>
+                            <span>@Runner.ActiveRun.StartTime.ToLocalTime().ToString("HH:mm:ss")</span>
+                        </div>
+                        <div class="trace-row">
+                            <span class="text-muted">Duration</span>
+                            <span>@Runner.ActiveRun.Duration.TotalSeconds.ToString("F1")s</span>
+                        </div>
+                        <div class="trace-row">
+                            <span class="text-muted">Total Tokens</span>
+                            <span class="mono">@Runner.ActiveRun.NodeTokens.Values.Sum().ToString("N0")</span>
+                        </div>
+                    </div>
+
+                    @if (_inspectedAgent != null)
+                    {
+                        var (summary, detail) = GetNodeInspectContent(_inspectedAgent);
+                        var inspectStatus = Runner.ActiveRun.NodeStatuses.GetValueOrDefault(_inspectedAgent);
+                        <div class="node-inspect-panel animate-fade-in-up">
+                            <div class="node-inspect-header">
+                                <span class="node-inspect-title">@_inspectedAgent</span>
+                                <span class="badge badge-@inspectStatus.ToString().ToLower()">@inspectStatus</span>
+                                <button class="node-inspect-close" @onclick="() => _inspectedAgent = null">✕</button>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(summary))
+                            {
+                                <p class="node-inspect-summary">@summary</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(detail))
+                            {
+                                <pre class="node-inspect-detail">@detail</pre>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Report Panel (appears after run completes) ────────── -->
+    @if (Runner.ActiveRun?.Report != null)
+    {
+        var report = Runner.ActiveRun.Report;
+        var isPartial = Runner.ActiveRun.Status == DagRunStatus.Failed;
+        <div class="report-panel animate-fade-in-up">
+
+            <div class="section-header" style="margin-bottom: 1.25rem;">
+                <h2>📊 Fault Report — @Runner.ActiveRun.SelectedAlert.AlertId</h2>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    @if (Runner.ActiveRun.IsResolved)
+                    {
+                        <span class="badge badge-completed">✓ Resolved</span>
+                    }
+                    else
+                    {
+                        @if (isPartial)
+                        {
+                            <span class="badge badge-failed">Partial — Run Failed</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-completed">Completed</span>
+                        }
+                        <button class="btn-secondary btn-icon btn-sm"
+                                @onclick="() => MarkResolvedAsync(Runner.ActiveRun.RunId)">
+                            ✓ Mark Resolved
+                        </button>
+                    }
+                </div>
+            </div>
+
+            @if (isPartial)
+            {
+                <div class="partial-run-banner">
+                    ⚠ One or more agents failed. Results below are partial — click the failed agent node above for error details.
+                </div>
+            }
+
+            <div class="report-grid">
+
+                <!-- Risk Card -->
+                @if (report.Risk != null)
+                {
+                    <div class="glass-card report-card">
+                        <h4>Risk Assessment</h4>
+                        <div class="risk-score-display">
+                            <span class="risk-score @GetRiskClass(report.Risk.SeverityScore)">
+                                @report.Risk.SeverityScore
+                                <span style="font-size: 1rem; font-weight: 400;">/10</span>
+                            </span>
+                            <span class="badge @GetSeverityBadgeClass(report.Risk.SeverityLevel)">
+                                @report.Risk.SeverityLevel
+                            </span>
+                        </div>
+                        <div class="severity-gauge" style="margin: 0.75rem 0;">
+                            <div class="severity-bar-track">
+                                <div class="severity-bar-fill"
+                                     style="width: @(report.Risk.SeverityScore * 10)%; background: @GetSeverityColor(report.Risk.SeverityScore);">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="report-meta-row">
+                            <span class="text-muted">Estimated Downtime</span>
+                            <strong>@report.Risk.DowntimeHoursEstimate.ToString("F1")h</strong>
+                        </div>
+                        <div class="report-meta-row">
+                            <span class="text-muted">Cost Impact</span>
+                            <strong>$@report.Risk.EstimatedCostImpact.ToString("N0")</strong>
+                        </div>
+                        <div class="report-meta-row">
+                            <span class="text-muted">Affected Occupants</span>
+                            <strong>@report.Risk.AffectedOccupants</strong>
+                        </div>
+                    </div>
+                }
+
+                <!-- Compliance Card -->
+                @if (report.Compliance != null)
+                {
+                    <div class="glass-card report-card">
+                        <h4>Compliance</h4>
+                        <div style="margin-bottom: 0.75rem;">
+                            @if (report.Compliance.IsCompliant)
+                            {
+                                <span class="badge badge-completed">✓ Compliant</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-failed">✗ Violations Found</span>
+                            }
+                        </div>
+                        <div class="report-meta-row">
+                            <span class="text-muted">Urgency</span>
+                            <strong>@report.Compliance.UrgencyLevel</strong>
+                        </div>
+                        @if (report.Compliance.ViolatedRegulations.Any())
+                        {
+                            <div class="tag-list" style="margin-top: 0.75rem;">
+                                @foreach (var reg in report.Compliance.ViolatedRegulations.Take(3))
+                                {
+                                    <span class="tag tag-error">@reg</span>
+                                }
+                            </div>
+                        }
+                        @if (report.Compliance.ApplicableStandards.Any())
+                        {
+                            <div class="tag-list" style="margin-top: 0.5rem;">
+                                @foreach (var std in report.Compliance.ApplicableStandards.Take(3))
+                                {
+                                    <span class="tag">@std</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Resolution Card -->
+                @if (report.Resolution != null)
+                {
+                    <div class="glass-card report-card">
+                        <h4>Work Order</h4>
+                        <div class="work-order-header">
+                            <span class="badge @GetPriorityBadgeClass(report.Resolution.Priority)">
+                                @report.Resolution.Priority
+                            </span>
+                            <span class="text-muted" style="font-size: 0.8rem;">@report.Resolution.AssignedTeam</span>
+                        </div>
+                        <p class="work-order-title">@report.Resolution.WorkOrderTitle</p>
+                        <div class="report-meta-row">
+                            <span class="text-muted">Est. Hours</span>
+                            <strong>@report.Resolution.EstimatedRepairHours.ToString("F1")h</strong>
+                        </div>
+                        <div class="report-meta-row">
+                            <span class="text-muted">Est. Cost</span>
+                            <strong>$@report.Resolution.EstimatedCost.ToString("N0")</strong>
+                        </div>
+                        @if (report.Resolution.RequiredParts.Any())
+                        {
+                            <div class="tag-list" style="margin-top: 0.75rem;">
+                                @foreach (var part in report.Resolution.RequiredParts.Take(3))
+                                {
+                                    <span class="tag">@part</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Executive Summary -->
+                <div class="glass-card report-card report-card--wide">
+                    <h4>Executive Summary</h4>
+                    <p class="exec-summary">@report.ExecutiveSummary</p>
+                    @if (!string.IsNullOrWhiteSpace(report.RecommendedAction))
+                    {
+                        <div class="recommended-action">
+                            <span class="rec-label">Recommended Action</span>
+                            <p>@report.RecommendedAction</p>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    private Alert? _selectedAlert;
+    private int _detectionLevel = 2; // 1=Low(4.5), 2=Medium(3.5), 3=High(2.5)
+
+    private string DetectionLevelName => _detectionLevel switch
+    {
+        1 => "Low",
+        3 => "High",
+        _ => "Medium"
+    };
+
+    private double DetectionZScore => _detectionLevel switch
+    {
+        1 => 4.5,
+        3 => 2.5,
+        _ => 3.5
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        Runner.OnRunUpdated += OnUpdated;
+
+        // Auto-scan on first load if no alerts cached
+        if (!Runner.CachedAlerts.Any() && !Runner.IsScanning)
+            await Runner.ScanForAlertsAsync(DetectionZScore);
+    }
+
+    private async Task OnUpdated()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnDetectionLevelChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var level))
+        {
+            _detectionLevel = level;
+            _selectedAlert = null;
+            await Runner.ScanForAlertsAsync(DetectionZScore);
+        }
+    }
+
+    private async Task ScanAsync()
+    {
+        _selectedAlert = null;
+        await Runner.ScanForAlertsAsync(DetectionZScore);
+    }
+
+    private void SelectAlert(Alert alert)
+    {
+        _selectedAlert = alert;
+    }
+
+    private async Task RunDagAsync()
+    {
+        if (_selectedAlert == null) return;
+        await Runner.RunDagAsync(_selectedAlert);
+    }
+
+    private async Task MarkResolvedAsync(string runId)
+    {
+        await Runner.MarkResolvedAsync(runId);
+    }
+
+    private async Task CancelRunAsync()
+    {
+        await Runner.CancelRunAsync();
+    }
+
+    private string? _inspectedAgent;
+
+    private void InspectNode(string agentName)
+    {
+        _inspectedAgent = _inspectedAgent == agentName ? null : agentName;
+    }
+
+    private (string summary, string? detail) GetNodeInspectContent(string agentName)
+    {
+        var run = Runner.ActiveRun;
+        if (run == null) return ("No run data.", null);
+
+        if (run.NodeErrors.TryGetValue(agentName, out var err) && !string.IsNullOrEmpty(err))
+            return ("Agent failed.", err);
+
+        if (!run.NodeResults.TryGetValue(agentName, out var result))
+            return ("No output recorded.", null);
+
+        return result switch
+        {
+            DiagnosticResult  dr => ($"{dr.FaultDescription}", $"Fault: {dr.ClassifiedFaultType} | Confidence: {dr.ConfidenceScore:P0} | Zone: {dr.Zone}\n{dr.AnalysisSummary}"),
+            ContextResult     cr => ($"{cr.ContextSummary}", $"Outdoor: {cr.OutdoorTemperature:F1}°C | Occupancy: {cr.OccupancyLevel} ({cr.EstimatedOccupants} people) | Weather: {cr.WeatherConditions}"),
+            MaintenanceResult mr => ($"{mr.MaintenanceSummary}", $"Open ticket: {(mr.HasOpenTicket ? mr.OpenTicketId : "None")} | Repairs (12m): {mr.RepairCount12Months} | Parts available: {mr.PartsAvailable}"),
+            RiskAssessment    ra => ($"{ra.RiskSummary}", $"Severity: {ra.SeverityLevel} ({ra.SeverityScore}/10) | Cost: ${ra.EstimatedCostImpact:N0} | Downtime: {ra.DowntimeHoursEstimate:F1}h | Occupants: {ra.AffectedOccupants}"),
+            ComplianceResult  co => ($"{co.ComplianceSummary}", $"Compliant: {co.IsCompliant} | Urgency: {co.UrgencyLevel} | Violations: {co.ViolatedRegulations.Count}"),
+            ResolutionPlan    rp => ($"{rp.ResolutionSummary}", $"Priority: {rp.Priority} | Team: {rp.AssignedTeam} | Est. {rp.EstimatedRepairHours:F1}h / ${rp.EstimatedCost:N0}\n{rp.WorkOrderTitle}"),
+            FaultReport       fr => ($"{fr.ExecutiveSummary}", $"Recommended: {fr.RecommendedAction}"),
+            _                    => ("Result type unknown.", null)
+        };
+    }
+
+    // ── DAG Node Renderer ─────────────────────────────────────
+
+    private RenderFragment RenderNode(string agentName, string icon, string label) => __builder =>
+    {
+        var run = Runner.ActiveRun;
+        NodeStatus status = run != null && run.NodeStatuses.TryGetValue(agentName, out var s)
+            ? s : NodeStatus.Pending;
+
+        var isRunning   = status == NodeStatus.Running;
+        var isCompleted = status == NodeStatus.Completed;
+        var isSkipped   = status == NodeStatus.Skipped;
+        var isFailed    = status == NodeStatus.Failed;
+        var isInspected = _inspectedAgent == agentName;
+        var canInspect  = (isCompleted || isFailed || isSkipped) && run != null;
+
+        var nodeClass = $"dag-node dag-node--{status.ToString().ToLower()} {(isInspected ? "dag-node--inspected" : "")}";
+        var duration  = run?.NodeDurations.GetValueOrDefault(agentName) ?? TimeSpan.Zero;
+        var tokens    = run?.NodeTokens.GetValueOrDefault(agentName) ?? 0;
+        var error     = run?.NodeErrors.GetValueOrDefault(agentName);
+
+        <button class="@nodeClass" @onclick="() => InspectNode(agentName)" disabled="@(!canInspect)"
+                title="@(canInspect ? $"Click to inspect {label}" : null)">
+            <div class="dag-node-icon">@icon</div>
+            <div class="dag-node-label">@label</div>
+            <div class="dag-node-status">
+                @if (isRunning)
+                {
+                    <span class="spinner"></span>
+                }
+                else if (isCompleted)
+                {
+                    <span style="color: var(--accent-green);">✓</span>
+                    @if (duration.TotalSeconds > 0)
+                    {
+                        <span class="mono" style="font-size: 0.65rem; color: var(--text-muted);">@duration.TotalSeconds.ToString("F1")s</span>
+                    }
+                }
+                else if (isSkipped)
+                {
+                    <span style="color: var(--text-muted);">⏭</span>
+                }
+                else if (isFailed)
+                {
+                    <span style="color: var(--accent-red);">✗</span>
+                }
+                else
+                {
+                    <span style="color: var(--text-muted); font-size: 0.65rem;">Pending</span>
+                }
+            </div>
+            @if (tokens > 0)
+            {
+                <div class="dag-node-tokens">@tokens tok</div>
+            }
+        </button>
+    };
+
+    // ── Helpers ───────────────────────────────────────────────
+
+    private static string GetRiskClass(int score) => score >= 8 ? "risk-critical" : score >= 6 ? "risk-high" : score >= 4 ? "risk-medium" : "risk-low";
+
+    private static string GetSeverityBadgeClass(string level) => level?.ToLower() switch
+    {
+        "critical" => "badge-failed",
+        "high"     => "badge-failed",
+        "medium"   => "badge-running",
+        _          => "badge-completed"
+    };
+
+    private static string GetSeverityColor(int score) =>
+        score >= 8 ? "#ef4444" : score >= 6 ? "#f59e0b" : score >= 4 ? "#06b6d4" : "#10b981";
+
+    private static string GetPriorityBadgeClass(string priority) => priority?.ToUpper() switch
+    {
+        "P1"  => "badge-failed",
+        "P2"  => "badge-running",
+        "P3"  => "badge-completed",
+        _     => "badge-pending"
+    };
+
+    public void Dispose()
+    {
+        Runner.OnRunUpdated -= OnUpdated;
+    }
+}

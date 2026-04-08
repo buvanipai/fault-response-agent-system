@@ -1,0 +1,8 @@
+/* RunHistory.razor scoped styles */
+.dash-header {
+    margin-bottom: 2rem;
+}
+
+.data-table {
+    width: 100%;
+}

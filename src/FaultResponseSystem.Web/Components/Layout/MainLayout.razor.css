@@ -1,0 +1,99 @@
+/* MainLayout scoped styles — dark theme overrides */
+
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar {
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+}
+
+.top-row {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    justify-content: flex-end;
+    height: 3.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0 2rem;
+}
+
+.top-row ::deep a,
+.top-row ::deep .btn-link {
+    white-space: nowrap;
+    color: var(--text-secondary);
+    font-size: 0.83rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.top-row ::deep a:hover,
+.top-row ::deep .btn-link:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+@media (max-width: 640.98px) {
+    .top-row {
+        justify-content: space-between;
+        padding: 0 1rem;
+    }
+}
+
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 240px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+    }
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .top-row, article {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+}
+
+#blazor-error-ui {
+    background: rgba(239, 68, 68, 0.15);
+    border-top: 1px solid rgba(239, 68, 68, 0.4);
+    color: var(--text-primary);
+    bottom: 0;
+    left: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+    display: none;
+    padding: 0.6rem 1.5rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    font-size: 0.875rem;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

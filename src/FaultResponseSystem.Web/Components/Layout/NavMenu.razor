@@ -1,0 +1,42 @@
+<div class="nav-brand">
+    <div class="nav-brand-icon">⚡</div>
+    <div>
+        <div class="nav-brand-title">FaultSense</div>
+        <div class="nav-brand-sub">Agent Dashboard</div>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+
+        <div class="nav-section-label">Navigation</div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="nav-icon">⬡</span>
+                <span>Dashboard</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="history">
+                <span class="nav-icon">◷</span>
+                <span>Run History</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-section-label">System</div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="https://github.com" target="_blank">
+                <span class="nav-icon">↗</span>
+                <span>GitHub</span>
+            </NavLink>
+        </div>
+
+    </nav>
+</div>
