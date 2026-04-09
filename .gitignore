@@ -38,7 +38,7 @@ appsettings.Development.json
 ## Python & Data
 venv/
 .venv/
-data/
+/data/
 __pycache__/
 *.pyc
 .env

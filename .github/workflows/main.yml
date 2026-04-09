@@ -24,15 +24,31 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Build Docker image
+    - name: Azure Container Registry Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build and Push Docker image
       uses: docker/build-push-action@v4
       with:
         context: .
-        push: false
-        tags: fault-response-system:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        push: true
+        tags: ${{ secrets.ACR_LOGIN_SERVER }}/fault-response-system:latest
 
-    - name: Verify Image
-      run: |
-        docker images | grep fault-response-system
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        containerAppName: fault-dashboard
+        resourceGroup: fault-agent-v3
+        imageToDeploy: faultagentv3reg.azurecr.io/fault-response-system:latest
+        registryUrl: faultagentv3reg.azurecr.io
+        registryUsername: faultagentv3reg
+        registryPassword: ${{ secrets.ACR_PASSWORD }}

@@ -1,0 +1,79 @@
+[
+  {
+    "WorkOrderId": "WO-2024-0847",
+    "BuildingId": "Panther_office_Briana",
+    "MeterId": "Panther_office_Briana_elec",
+    "Date": "2024-11-15T10:00:00",
+    "Type": "Preventive",
+    "Description": "Annual electrical panel inspection and thermal imaging scan",
+    "Status": "Completed",
+    "TechnicianNotes": "All panels within normal thermal range. Tightened loose connections on Panel B3-14. Replaced two aging breakers as preventive measure.",
+    "Cost": 1250.00
+  },
+  {
+    "WorkOrderId": "WO-2024-0912",
+    "BuildingId": "Panther_office_Briana",
+    "MeterId": "Panther_office_Briana_chill",
+    "Date": "2024-12-03T14:30:00",
+    "Type": "Corrective",
+    "Description": "Chilled water supply temperature running 4°F above setpoint",
+    "Status": "Completed",
+    "TechnicianNotes": "Found clogged strainer on chiller CHW-02. Cleaned strainer and replaced gaskets. Verified supply temp returned to 44°F setpoint.",
+    "Cost": 875.00
+  },
+  {
+    "WorkOrderId": "WO-2025-0031",
+    "BuildingId": "Panther_office_Briana",
+    "MeterId": "Panther_office_Briana_elec",
+    "Date": "2025-01-08T09:15:00",
+    "Type": "Corrective",
+    "Description": "Intermittent power dips on floors 10-14 reported by tenants",
+    "Status": "Completed",
+    "TechnicianNotes": "Traced to failing capacitor bank on main switchgear. Replaced capacitor bank. Monitoring for 48 hours showed stable power quality.",
+    "Cost": 4200.00
+  },
+  {
+    "WorkOrderId": "WO-2025-0089",
+    "BuildingId": "Panther_education_Karina",
+    "MeterId": "Panther_education_Karina_steam",
+    "Date": "2025-02-14T08:00:00",
+    "Type": "Emergency",
+    "Description": "Steam leak detected in mechanical room, building heating capacity reduced by 40%",
+    "Status": "Completed",
+    "TechnicianNotes": "Corroded elbow joint on 4-inch steam main in MR-2. Replaced fitting and 6ft of corroded pipe. Root cause: age (pipe original to 1978 construction). Recommended full steam main survey.",
+    "Cost": 8700.00
+  },
+  {
+    "WorkOrderId": "WO-2025-0142",
+    "BuildingId": "Panther_lodging_Derek",
+    "MeterId": "Panther_lodging_Derek_hotwater",
+    "Date": "2025-03-01T11:45:00",
+    "Type": "Preventive",
+    "Description": "Quarterly hot water system inspection and flush",
+    "Status": "Completed",
+    "TechnicianNotes": "Flushed both HW tanks. Tank #2 showing increased sediment buildup vs last quarter. Anode rod at 60% life remaining. Recommend replacement at next PM cycle.",
+    "Cost": 450.00
+  },
+  {
+    "WorkOrderId": "WO-2025-0198",
+    "BuildingId": "Panther_education_Karina",
+    "MeterId": "Panther_education_Karina_elec",
+    "Date": "2025-03-20T16:00:00",
+    "Type": "Corrective",
+    "Description": "Electrical meter reporting flat zero readings for 6+ hours",
+    "Status": "Open",
+    "TechnicianNotes": "Initial investigation: meter communication board may have failed. Parts on order. Building power confirmed operational via manual readings.",
+    "Cost": 0.00
+  },
+  {
+    "WorkOrderId": "WO-2025-0215",
+    "BuildingId": "Panther_lodging_Derek",
+    "MeterId": "Panther_lodging_Derek_elec",
+    "Date": "2025-04-01T07:30:00",
+    "Type": "Corrective",
+    "Description": "Electricity consumption spike detected — 3x normal baseline for overnight period",
+    "Status": "InProgress",
+    "TechnicianNotes": "Investigating possible stuck relay on HVAC economizer. Economizer damper found fully open during unoccupied hours. Temporary manual override applied.",
+    "Cost": 320.00
+  }
+]

@@ -1,0 +1,209 @@
+[
+  {
+    "BuildingId": "Panther_education_Misty",
+    "SiteId": "Panther",
+    "PrimaryUse": "Education",
+    "SquareFeet": 2720,
+    "YearBuilt": 2004,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_education_Misty_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_office_Garth",
+    "SiteId": "Panther",
+    "PrimaryUse": "Office",
+    "SquareFeet": 52957,
+    "YearBuilt": 2016,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_office_Garth_chilledwater"
+    ]
+  },
+  {
+    "BuildingId": "Panther_education_Teofila",
+    "SiteId": "Panther",
+    "PrimaryUse": "Education",
+    "SquareFeet": 93897,
+    "YearBuilt": 1999,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_education_Teofila_chilledwater",
+      "Panther_education_Teofila_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_lodging_Hattie",
+    "SiteId": "Panther",
+    "PrimaryUse": "Lodging/residential",
+    "SquareFeet": 38686,
+    "YearBuilt": 2002,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_lodging_Hattie_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_retail_Kristina",
+    "SiteId": "Panther",
+    "PrimaryUse": "Retail",
+    "SquareFeet": 59071,
+    "YearBuilt": 1980,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_retail_Kristina_chilledwater"
+    ]
+  },
+  {
+    "BuildingId": "Panther_retail_Gilbert",
+    "SiteId": "Panther",
+    "PrimaryUse": "Retail",
+    "SquareFeet": 15304,
+    "YearBuilt": 2016,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_retail_Gilbert_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_retail_Felix",
+    "SiteId": "Panther",
+    "PrimaryUse": "Retail",
+    "SquareFeet": 31666,
+    "YearBuilt": 2008,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_retail_Felix_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_parking_Asia",
+    "SiteId": "Panther",
+    "PrimaryUse": "Parking",
+    "SquareFeet": 387638,
+    "YearBuilt": 2014,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_parking_Asia_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_education_Neal",
+    "SiteId": "Panther",
+    "PrimaryUse": "Education",
+    "SquareFeet": 81576,
+    "YearBuilt": 1997,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_education_Neal_chilledwater"
+    ]
+  },
+  {
+    "BuildingId": "Panther_parking_Lorriane",
+    "SiteId": "Panther",
+    "PrimaryUse": "Parking",
+    "SquareFeet": 387638,
+    "YearBuilt": 2008,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_parking_Lorriane_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_education_Jerome",
+    "SiteId": "Panther",
+    "PrimaryUse": "Education",
+    "SquareFeet": 128887,
+    "YearBuilt": 2009,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_education_Jerome_chilledwater",
+      "Panther_education_Jerome_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_education_Enriqueta",
+    "SiteId": "Panther",
+    "PrimaryUse": "Education",
+    "SquareFeet": 76257,
+    "YearBuilt": 2007,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_education_Enriqueta_chilledwater"
+    ]
+  },
+  {
+    "BuildingId": "Panther_office_Hannah",
+    "SiteId": "Panther",
+    "PrimaryUse": "Office",
+    "SquareFeet": 4038,
+    "YearBuilt": 1986,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_office_Hannah_electricity"
+    ]
+  },
+  {
+    "BuildingId": "Panther_office_Lavinia",
+    "SiteId": "Panther",
+    "PrimaryUse": "Office",
+    "SquareFeet": 10779,
+    "YearBuilt": 1970,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_office_Lavinia_chilledwater"
+    ]
+  },
+  {
+    "BuildingId": "Panther_office_Clementine",
+    "SiteId": "Panther",
+    "PrimaryUse": "Office",
+    "SquareFeet": 33370,
+    "YearBuilt": 1982,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_office_Clementine_chilledwater"
+    ]
+  },
+  {
+    "BuildingId": "Panther_lodging_Kara",
+    "SiteId": "Panther",
+    "PrimaryUse": "Lodging/residential",
+    "SquareFeet": 200933,
+    "YearBuilt": 2006,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_lodging_Kara_chilledwater"
+    ]
+  },
+  {
+    "BuildingId": "Panther_lodging_Cora",
+    "SiteId": "Panther",
+    "PrimaryUse": "Lodging/residential",
+    "SquareFeet": 187647,
+    "YearBuilt": 2007,
+    "FloorCount": 0,
+    "Timezone": "US/Eastern",
+    "MeterIds": [
+      "Panther_lodging_Cora_chilledwater",
+      "Panther_lodging_Cora_electricity"
+    ]
+  }
+]

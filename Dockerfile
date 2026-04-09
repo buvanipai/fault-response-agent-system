@@ -23,7 +23,6 @@ COPY --from=build /app/publish .
 
 # Expose ports
 EXPOSE 8080
-EXPOSE 8081
 
 # Environmental flags for Blazor Server
 ENV ASPNETCORE_URLS=http://+:8080

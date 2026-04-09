@@ -1,0 +1,140 @@
+{
+  "Rules": [
+    {
+      "RuleId": "ASHRAE-55-2020-01",
+      "Standard": "ASHRAE 55-2020",
+      "Category": "Temperature",
+      "Description": "Thermal Environmental Conditions for Human Occupancy",
+      "Requirement": "Indoor operative temperature must be maintained within 67°F-82°F (19.4°C-27.8°C) for occupied spaces during business hours",
+      "SeverityThreshold": 3,
+      "ApplicableFaultTypes": ["Spike", "Drift"],
+      "ApplicableMeterTypes": ["ChilledWater", "HotWater", "Steam"]
+    },
+    {
+      "RuleId": "ASHRAE-90.1-2019-01",
+      "Standard": "ASHRAE 90.1-2019",
+      "Category": "Energy Efficiency",
+      "Description": "Energy Standard for Buildings Except Low-Rise Residential",
+      "Requirement": "Building energy consumption must not exceed baseline by more than 25% for consecutive 72-hour periods without documented cause",
+      "SeverityThreshold": 5,
+      "ApplicableFaultTypes": ["Spike", "Drift"],
+      "ApplicableMeterTypes": ["Electricity", "ChilledWater", "Steam", "HotWater"]
+    },
+    {
+      "RuleId": "OSHA-1910.147-01",
+      "Standard": "OSHA 1910.147",
+      "Category": "Electrical Safety",
+      "Description": "Control of Hazardous Energy (Lockout/Tagout)",
+      "Requirement": "Any electrical fault producing readings >150% of rated capacity requires immediate lockout/tagout procedure before servicing",
+      "SeverityThreshold": 7,
+      "ApplicableFaultTypes": ["Spike"],
+      "ApplicableMeterTypes": ["Electricity"]
+    },
+    {
+      "RuleId": "NFPA-70-2023-01",
+      "Standard": "NFPA 70 (NEC 2023)",
+      "Category": "Electrical Safety",
+      "Description": "National Electrical Code - Overcurrent Protection",
+      "Requirement": "Sustained overcurrent conditions (>120% rated load for >30 minutes) must trigger automated disconnect or generate a priority-1 work order",
+      "SeverityThreshold": 8,
+      "ApplicableFaultTypes": ["Spike", "Drift"],
+      "ApplicableMeterTypes": ["Electricity"]
+    },
+    {
+      "RuleId": "ASHRAE-188-2018-01",
+      "Standard": "ASHRAE 188-2018",
+      "Category": "Water Safety",
+      "Description": "Legionellosis: Risk Management for Building Water Systems",
+      "Requirement": "Hot water systems must maintain distribution temperature above 120°F (49°C). Any flatline or drift below this threshold requires immediate investigation",
+      "SeverityThreshold": 6,
+      "ApplicableFaultTypes": ["Flatline", "Drift"],
+      "ApplicableMeterTypes": ["HotWater"]
+    },
+    {
+      "RuleId": "EPA-ENERGY-STAR-01",
+      "Standard": "EPA ENERGY STAR",
+      "Category": "Energy Efficiency",
+      "Description": "Energy Performance Benchmarking",
+      "Requirement": "Buildings must report and investigate any anomalous energy usage patterns that would shift ENERGY STAR score by >15 points",
+      "SeverityThreshold": 4,
+      "ApplicableFaultTypes": ["Spike", "Drift", "Oscillation"],
+      "ApplicableMeterTypes": ["Electricity", "ChilledWater", "Steam", "HotWater"]
+    },
+    {
+      "RuleId": "LOCAL-FIRE-CODE-01",
+      "Standard": "Local Fire Code",
+      "Category": "Fire Safety",
+      "Description": "Electrical System Monitoring",
+      "Requirement": "Any electrical anomaly scoring severity 9+ must be reported to building fire safety officer within 1 hour",
+      "SeverityThreshold": 9,
+      "ApplicableFaultTypes": ["Spike"],
+      "ApplicableMeterTypes": ["Electricity"]
+    }
+  ],
+  "Parts": [
+    {
+      "PartId": "PT-RELAY-240V",
+      "Component": "240V HVAC Relay",
+      "QuantityInStock": 4,
+      "UnitCost": 85.00,
+      "LeadTimeDays": 0,
+      "Supplier": "Grainger"
+    },
+    {
+      "PartId": "PT-CAPACITOR-BANK",
+      "Component": "Power Factor Capacitor Bank",
+      "QuantityInStock": 0,
+      "UnitCost": 3200.00,
+      "LeadTimeDays": 5,
+      "Supplier": "Eaton"
+    },
+    {
+      "PartId": "PT-METER-COMM",
+      "Component": "Meter Communication Board",
+      "QuantityInStock": 2,
+      "UnitCost": 450.00,
+      "LeadTimeDays": 0,
+      "Supplier": "Schneider Electric"
+    },
+    {
+      "PartId": "PT-STEAM-ELBOW",
+      "Component": "4-inch Steam Elbow Joint",
+      "QuantityInStock": 6,
+      "UnitCost": 120.00,
+      "LeadTimeDays": 0,
+      "Supplier": "Ferguson"
+    },
+    {
+      "PartId": "PT-CHW-STRAINER",
+      "Component": "Chilled Water Strainer Assembly",
+      "QuantityInStock": 1,
+      "UnitCost": 380.00,
+      "LeadTimeDays": 0,
+      "Supplier": "Taco Comfort Solutions"
+    },
+    {
+      "PartId": "PT-BREAKER-200A",
+      "Component": "200A Circuit Breaker",
+      "QuantityInStock": 0,
+      "UnitCost": 750.00,
+      "LeadTimeDays": 3,
+      "Supplier": "Siemens"
+    },
+    {
+      "PartId": "PT-ANODE-ROD",
+      "Component": "Hot Water Tank Anode Rod",
+      "QuantityInStock": 3,
+      "UnitCost": 65.00,
+      "LeadTimeDays": 0,
+      "Supplier": "Rheem"
+    },
+    {
+      "PartId": "PT-VFD-50HP",
+      "Component": "50HP Variable Frequency Drive",
+      "QuantityInStock": 0,
+      "UnitCost": 5800.00,
+      "LeadTimeDays": 14,
+      "Supplier": "ABB"
+    }
+  ]
+}
