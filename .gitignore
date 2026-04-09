@@ -44,6 +44,3 @@ __pycache__/
 .env
 .env.*
 !.env.example
-
-## Web Libs
-src/FaultResponseSystem.Web/wwwroot/lib/
